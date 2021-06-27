@@ -7,6 +7,10 @@ from helper_functions import *
 #TODO: Implement time range
 #TODO: Remove duplicate code, more functions
 
+def in_time_range(data_line,start_date=None,end_date=None):
+    """Filters out data of interest"""
+    
+
 def retrieve_electricity_stats(start_date,end_date,filename):
     """
     """
@@ -22,7 +26,6 @@ def retrieve_electricity_stats(start_date,end_date,filename):
         linewriter = csv.writer(csvfile,delimiter=' ')
         for line in r.iter_lines(decode_unicode=True):
             if 'Periods' in line and 'MM' in line:
-                #removing whitespace
                 data_point = get_data_from_line(line)
                 #print(data_point)
                 write_data_point(data_point,linewriter,"el-prod","mlnkWh")
@@ -38,17 +41,6 @@ def retrieve_gas_stats(start_date,end_date):
     gas_params = {'$select':'Periods,GrossProduction_1'}
     #Found URL's navigating the cbs Data Portal in API (for Apps)
     url_gas = "https://opendata.cbs.nl/ODataApi/odata/00372eng/TypedDataSet"
-    
-    r = url_request(gas_params)
+    r = url_request(url_gas,gas_params)
 
-    #print(r.url)
-    data_text = r.text.splitlines()
-    #print(data_text)
-    with open(filename, 'w', newline='') as csvfile:
-        linewriter = csv.writer(csvfile)
-        for line in data_text:
-            txt = line.strip('{} ,')
-            print(txt)
-            write_data_line(txt,linewriter)
-            #print(line.strip(''))
 
