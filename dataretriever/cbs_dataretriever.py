@@ -30,35 +30,34 @@ def define_cmdline_options():
             action='store_true', default=False, 
             help='Option to retrieve natural gas data')
     parser.add_argument('-sd', '--start_date', 
-            type=str, default="0000.00.00", 
+            type=str, default="1950-01-01", 
             help='start date to limit time range', metavar='start_date')
     parser.add_argument('-ed', '--end_date', 
-            type=str, default="2022.01.01", 
+            type=str, default="2022-01-01", 
             help='end date to limit time range', metavar='end_date')
     parser.add_argument('-f', '--frequency', 
             type=str, default='MM', 
-            help='Frequency of value calculation, valid args: MM, KW or YY', metavar='frequency')
+            help='Frequency of value calculation, valid args: MM, KW or JJ', metavar='frequency')
     parser.add_argument('-fn', '--filename', 
-            type=str, default='power_stats.csv', 
-            help='name of file to write collected data into', metavar='filename')
+            type=str, default='power_stats', 
+            help='name of file to write collected data into, will be extended with commodity',
+            metavar='filename')
 
-    return parser.parse_args()
+    return parser
 
 
 #TODO: HANDLE CASE IF ARGUMENTS ARE NOT VALID
 
 if __name__ == '__main__':
-
+    #Define command line arguments
     cmdline_parser = define_cmdline_options()
-    
-    print(cmdline_parser.electricity_option)
-    print(retrieve_data.convert_date_format("2018MM02"))
-    
-    #parse command line()
-    #sender forespørsel til url dersom dette ønskes()
-    #sjekker om ok()
-    #henter data ut i streng()
-    retrieve_data.retrieve_electricity_stats(cmdline_parser.start_date,
-            cmdline_parser.end_date,
-            cmdline_parser.frequency,
-            cmdline_parser.filename)
+    #Parse command line
+    cmdline_args = cmdline_parser.parse_args()
+    #Verify input and convert dates
+    input_verification.verify_input_frequency(cmdline_args)
+    start_date, end_date = input_verification.verify_input_interval(cmdline_args)
+
+    #sending request to get electi
+    retrieve_data.get_electricity_stats(start_date, end_date,
+            cmdline_args.frequency,
+            cmdline_args.filename)

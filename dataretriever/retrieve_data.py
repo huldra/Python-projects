@@ -7,11 +7,35 @@ from helper_functions import *
 #TODO: Implement time range
 #TODO: Remove duplicate code, more functions
 
-def in_time_range(data_line,start_date=None,end_date=None):
-    """Filters out data of interest"""
-    
 
-def retrieve_electricity_stats(start_date,end_date,frequency,filename):
+def parse_and_write_el_data(response, frequency, start_date, end_date, linewriter):
+    """
+    Parse the lines of the response, filtering out the lines containing data
+    If the date in inside our requested interval, the data is written to file.
+    """
+    for line in response.iter_lines(decode_unicode=True):
+        if 'Periods' in line and frequency in line:
+            data_point = get_data_from_line(line,frequency)
+            if is_in_time_range(data_point["Date"], start_date, end_date):
+                print(data_point)
+                write_data_point(data_point,linewriter,"el-prod",
+                        format_frequency(frequency),"mlnkWh")
+                write_data_point(data_point,linewriter,"el-cons",
+                        format_frequency(frequency),"mlnkWh")
+    return
+
+
+def parse_and_write_gas_data(response, frequency, start_date, end_date, linewriter):
+    for line in response.iter_lines(decode_unicode=True):
+        if 'Periods' in line and frequency in line:
+            data_point = get_data_from_line(line,frequency)
+            #print(data_point)
+            if is_in_time_range(data_point["Date"], start_date, end_date):
+                write_data_point(data_point,linewriter,"gas","mlnm3")
+    return
+
+
+def get_electricity_stats(start_date,end_date,frequency,filename):
     """
     """
     #Select the columns we are interested in 
@@ -21,26 +45,29 @@ def retrieve_electricity_stats(start_date,end_date,frequency,filename):
     
     r = url_request(url_electricity,electricity_params)
     #TODO handle exeptions
-    #print(r.url)
+    filename = filename+"_electricity.csv"
+
     with open(filename, 'w', newline='') as csvfile:
         linewriter = csv.writer(csvfile,delimiter=' ')
-        for line in r.iter_lines(decode_unicode=True):
-            if 'Periods' in line and frequency in line:
-                data_point = get_data_from_line(line)
-                #print(data_point)
-                write_data_point(data_point,linewriter,"el-prod","mlnkWh")
-                write_data_point(data_point,linewriter,"el-cons","mlnkWh")
+        parse_and_write_el_data(r, frequency, start_date, end_date, linewriter)
 
 
-def retrieve_gas_stats(start_date,end_date):
+def get_gas_stats(start_date,end_date,frequency,filename):
     """
     
 
     """
     #Select the columns we are interested in 
-    gas_params = {'$select':'Periods,GrossProduction_1'}
+    gas_params = {'$select':'Periods,ElectricityPowerPlants_12'}
     #Found URL's navigating the cbs Data Portal in API (for Apps)
     url_gas = "https://opendata.cbs.nl/ODataApi/odata/00372eng/TypedDataSet"
+
     r = url_request(url_gas,gas_params)
+    filename = filename+"_natural_gas.csv"
+
+    with open(filename, 'w', newline='') as csvfile:
+        linewriter = csv.writer(csvfile,delimiter=' ')
+        parse_and_write_gas_data(r, frequency, start_date, end_date, linewriter)
+
 
 
