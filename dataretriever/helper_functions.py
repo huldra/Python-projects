@@ -7,7 +7,7 @@ import datetime
 def url_request(url,request_params):
     """Produce a response object from the given URL"""
     r = requests.request('GET',url,params=request_params)
-    request_verification(r)
+    verify_request(r)
     return r
 
 
@@ -18,25 +18,30 @@ def verify_request(response):
         exit(0)
 
 
-def create_data_point(line,frequency):
+def create_data_point(line,frequency,commodity):
     """Convert line of data into dictionary"""
-    data_point = {"Date" : convert_date_format(line[3],frequency), 
-            "el-prod" : line[6].strip(":, "), "el-cons" : line[8].strip(":, ")}
+    if commodity == "el":
+        data_point = {"Date" : convert_date_format(line[3],frequency), 
+                "el-prod" : line[6].strip(":, "), "el-cons" : line[8].strip(":, ")}
+    else:
+        data_point = {"Date" : convert_date_format(line[3],frequency), 
+                "gas" : line[6].strip(":, ")}
+ 
     return data_point
 
 
-def write_data_point(data_point, linewriter, commodity, unit):
+def write_data_point(data_point, linewriter, commodity, frequency, unit):
     """Write one data point on the right format to given filename"""
-    line = [data_point['Date'], '00:00', data_point[commodity], commodity, 'monthly', unit]
+    line = [data_point['Date'], '00:00', data_point[commodity], commodity, frequency, unit]
     linewriter.writerow(line)
 
 
-def get_data_from_line(line,frequency):
+def get_data_from_line(line,frequency,commodity):
     """Clean up each line, and extract data of interest into a dict"""
     line = line.strip() #cleaning up
     line = line.split('"') #convert from string into list
     #extract data of interest into a dictionary
-    data_point = create_data_point(line,frequency)
+    data_point = create_data_point(line,frequency,commodity)
     return data_point
 
 
@@ -54,5 +59,6 @@ def is_in_time_range(curr_date,start_date,end_date):
 
 
 def format_frequency(frequency):
+    """Convert to format expected in file"""
     options = {'MM':'monthly','KW':'Quarter wise','JJ':'yearly'}
     return options[frequency]

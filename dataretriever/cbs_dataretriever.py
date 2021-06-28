@@ -23,10 +23,10 @@ interested in the request.
 def define_cmdline_options():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-e', '--electricity_option', 
+    parser.add_argument('-e', '--request_electricity', 
             action='store_true', default=False, 
             help='Option to retrieve electricity data')
-    parser.add_argument('-n', '--natural_gas_option', 
+    parser.add_argument('-n', '--request_natural_gas', 
             action='store_true', default=False, 
             help='Option to retrieve natural gas data')
     parser.add_argument('-sd', '--start_date', 
@@ -45,19 +45,34 @@ def define_cmdline_options():
 
     return parser
 
+def request_data(cmdline_args):
+    #if asked for, sending request to get electricity stats
+    if cmdline_args.request_electricity:
+        retrieve_data.get_electricity_stats(start_date, end_date,
+                cmdline_args.frequency,
+                cmdline_args.filename)
+    
+    #if asked for, sending request to get electricity stats
+    if cmdline_args.request_natural_gas:
+        retrieve_data.get_gas_stats(start_date, end_date,
+                cmdline_args.frequency,
+                cmdline_args.filename)
 
-#TODO: HANDLE CASE IF ARGUMENTS ARE NOT VALID
+    return
+
 
 if __name__ == '__main__':
     #Define command line arguments
     cmdline_parser = define_cmdline_options()
+
     #Parse command line
     cmdline_args = cmdline_parser.parse_args()
+    
     #Verify input and convert dates
     input_verification.verify_input_frequency(cmdline_args)
     start_date, end_date = input_verification.verify_input_interval(cmdline_args)
 
-    #sending request to get electi
-    retrieve_data.get_electricity_stats(start_date, end_date,
-            cmdline_args.frequency,
-            cmdline_args.filename)
+    #Request data
+    request_data(cmdline_args)
+
+
