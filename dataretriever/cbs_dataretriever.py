@@ -2,6 +2,9 @@ import argparse
 import requests
 import csv
 import retrieve_data
+import datetime
+import helper_functions
+import input_verification
 
 # ---------------------------- NOTES/ASSUMPTIONS--------------------------------"
 """
@@ -27,11 +30,14 @@ def define_cmdline_options():
             action='store_true', default=False, 
             help='Option to retrieve natural gas data')
     parser.add_argument('-sd', '--start_date', 
-            type=str, default=None, 
+            type=str, default="0000.00.00", 
             help='start date to limit time range', metavar='start_date')
     parser.add_argument('-ed', '--end_date', 
-            type=str, default=None, 
+            type=str, default="2022.01.01", 
             help='end date to limit time range', metavar='end_date')
+    parser.add_argument('-f', '--frequency', 
+            type=str, default='MM', 
+            help='Frequency of value calculation, valid args: MM, KW or YY', metavar='frequency')
     parser.add_argument('-fn', '--filename', 
             type=str, default='power_stats.csv', 
             help='name of file to write collected data into', metavar='filename')
@@ -39,25 +45,20 @@ def define_cmdline_options():
     return parser.parse_args()
 
 
-
-
-
-def main(electricity, natural_gas):
-    if electricity:
-        retrieve_electricity_stats(t0,t1)
-    if natural_gas:
-        retrieve_gas_stats(t0,t1)
-
-
-#TODO: CHECK THAT END DATE IS AFTER START DATE
 #TODO: HANDLE CASE IF ARGUMENTS ARE NOT VALID
 
 if __name__ == '__main__':
+
     cmdline_parser = define_cmdline_options()
+    
     print(cmdline_parser.electricity_option)
     print(retrieve_data.convert_date_format("2018MM02"))
+    
     #parse command line()
     #sender forespørsel til url dersom dette ønskes()
     #sjekker om ok()
     #henter data ut i streng()
-    retrieve_data.retrieve_electricity_stats(0,1,cmdline_parser.filename)
+    retrieve_data.retrieve_electricity_stats(cmdline_parser.start_date,
+            cmdline_parser.end_date,
+            cmdline_parser.frequency,
+            cmdline_parser.filename)

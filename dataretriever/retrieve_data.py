@@ -11,7 +11,7 @@ def in_time_range(data_line,start_date=None,end_date=None):
     """Filters out data of interest"""
     
 
-def retrieve_electricity_stats(start_date,end_date,filename):
+def retrieve_electricity_stats(start_date,end_date,frequency,filename):
     """
     """
     #Select the columns we are interested in 
@@ -25,7 +25,7 @@ def retrieve_electricity_stats(start_date,end_date,filename):
     with open(filename, 'w', newline='') as csvfile:
         linewriter = csv.writer(csvfile,delimiter=' ')
         for line in r.iter_lines(decode_unicode=True):
-            if 'Periods' in line and 'MM' in line:
+            if 'Periods' in line and frequency in line:
                 data_point = get_data_from_line(line)
                 #print(data_point)
                 write_data_point(data_point,linewriter,"el-prod","mlnkWh")

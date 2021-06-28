@@ -28,14 +28,12 @@ def get_data_from_line(line):
     data_point = create_data_point(line)
     return data_point
 
-def convert_date_format(date_pattern):
+def convert_date_format(date_pattern,frequency):
     """Convert the format of the date from the form 1991MM02 to 1991.02.01"""
-    new_format = ""
-    new_format += date_pattern[:4]+"-"+date_pattern[-2:]+"-01"
+    new_format = datetime.datetime.strptime(date_pattern, "%Y"+frequency+"%m") 
     return new_format
 
 def write_data_point(data_point, linewriter, commodity, unit):
     """Write one data point on the right format to given filename"""
     line = [data_point['Date'], '00:00', data_point[commodity], commodity, 'monthly', unit]
     linewriter.writerow(line)
-    
