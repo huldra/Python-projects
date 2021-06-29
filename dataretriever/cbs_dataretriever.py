@@ -72,7 +72,7 @@ if __name__ == '__main__':
     input_verification.verify_input_frequency(cmdline_args)
     start_date, end_date = input_verification.verify_input_interval(cmdline_args)
 
-    #Request data
+    #Request data and write to file
     request_data(cmdline_args)
 
 

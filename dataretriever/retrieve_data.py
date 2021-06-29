@@ -18,7 +18,6 @@ def parse_and_write_el_data(response, frequency, start_date, end_date, linewrite
         if 'Periods' in line and frequency in line:
             data_point = get_data_from_line(line,frequency,commodity)
             if is_in_time_range(data_point["Date"], start_date, end_date):
-                print(data_point)
                 write_data_point(data_point,linewriter,"el-prod",
                         format_frequency(frequency),"mlnkWh")
                 write_data_point(data_point,linewriter,"el-cons",
@@ -35,7 +34,6 @@ def parse_and_write_gas_data(response, frequency, start_date, end_date, linewrit
     for line in response.iter_lines(decode_unicode=True):
         if 'Periods' in line and frequency in line:
             data_point = get_data_from_line(line,frequency,commodity)
-            #print(data_point)
             if is_in_time_range(data_point["Date"], start_date, end_date):
                 write_data_point(data_point,linewriter,"gas",
                         format_frequency(frequency),"mlnm3")

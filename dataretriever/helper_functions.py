@@ -46,8 +46,17 @@ def get_data_from_line(line,frequency,commodity):
 
 
 def convert_date_format(date_pattern,frequency):
-    """Convert the format of the date from the form 1991MM02 to 1991.02.01"""
-    new_format = datetime.datetime.strptime(date_pattern, "%Y"+frequency+"%m").date() #BUG HERE
+    """Convert the format of the date from the form 1991MM02 to 1991-02-01"""
+    year = int(date_pattern[:4])
+    count = int(date_pattern[-2:])
+    #Make it possible to choose any frequency
+    if frequency == "KW":
+        count = count*3 -2
+    if frequency == "JJ":
+        count = 1
+    month = count
+    new_format = datetime.datetime(year,month,1).date()
+    #new_format = datetime.datetime.strptime(date_pattern, "%Y"+frequency+"%m").date() #BUG HERE
     return new_format
 
 
