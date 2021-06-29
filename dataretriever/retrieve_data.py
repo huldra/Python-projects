@@ -41,27 +41,26 @@ def parse_and_write_gas_data(response, frequency, start_date, end_date, linewrit
 
 
 def get_electricity_stats(start_date,end_date,frequency,filename):
-    """
-    """
+    """Request data from specified URL, write data of interest to file"""
+    
     #Select the columns we are interested in 
     electricity_params = {'$select':'Periods,GrossProduction_1,NetConsumptionCalculated_30'}
     #Found URL's navigating the cbs Data Portal in API (for Apps)
     url_electricity = "https://opendata.cbs.nl/ODataApi/odata/84575ENG/TypedDataSet"
     
     r = url_request(url_electricity,electricity_params)
-    #TODO handle exeptions
     filename = filename+"_electricity.csv"
 
     with open(filename, 'w', newline='') as csvfile:
         linewriter = csv.writer(csvfile,delimiter=' ')
         parse_and_write_el_data(r, frequency, start_date, end_date, linewriter)
 
+    print("Data written to file: ",filename)
+
 
 def get_gas_stats(start_date,end_date,frequency,filename):
-    """
+    """Request data from specified URL, write data of interest to file"""
     
-
-    """
     #Select the columns we are interested in 
     gas_params = {'$select':'Periods,ElectricityPowerPlants_12'}
     #Found URL's navigating the cbs Data Portal in API (for Apps)
@@ -73,6 +72,6 @@ def get_gas_stats(start_date,end_date,frequency,filename):
     with open(filename, 'w', newline='') as csvfile:
         linewriter = csv.writer(csvfile,delimiter=' ')
         parse_and_write_gas_data(r, frequency, start_date, end_date, linewriter)
-
+    print("Data written to file: ",filename)
 
 

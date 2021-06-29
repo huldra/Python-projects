@@ -5,6 +5,7 @@ import retrieve_data
 import datetime
 import helper_functions
 import input_verification
+import sys
 
 # ---------------------------- NOTES/ASSUMPTIONS--------------------------------"
 """
@@ -31,10 +32,10 @@ def define_cmdline_options():
             help='Option to retrieve natural gas data')
     parser.add_argument('-sd', '--start_date', 
             type=str, default="1950-01-01", 
-            help='start date to limit time range', metavar='start_date')
+            help='start date to limit time range', metavar='yyyy-mm-dd')
     parser.add_argument('-ed', '--end_date', 
             type=str, default="2022-01-01", 
-            help='end date to limit time range', metavar='end_date')
+            help='end date to limit time range', metavar='yyyy-mm-dd')
     parser.add_argument('-f', '--frequency', 
             type=str, default='MM', 
             help='Frequency of value calculation, valid args: MM, KW or JJ', metavar='frequency')
@@ -52,7 +53,7 @@ def request_data(cmdline_args):
                 cmdline_args.frequency,
                 cmdline_args.filename)
     
-    #if asked for, sending request to get electricity stats
+    #if asked for, sending request to get natural gas stats
     if cmdline_args.request_natural_gas:
         retrieve_data.get_gas_stats(start_date, end_date,
                 cmdline_args.frequency,
@@ -62,11 +63,16 @@ def request_data(cmdline_args):
 
 
 if __name__ == '__main__':
+
     #Define command line arguments
     cmdline_parser = define_cmdline_options()
 
     #Parse command line
     cmdline_args = cmdline_parser.parse_args()
+
+    #Check if any request is given
+    if cmdline_args.request_electricity == False and  cmdline_args.request_natural_gas == False:
+        print("You have not requested any data to be retrieved, please type -h for help")
     
     #Verify input and convert dates
     input_verification.verify_input_frequency(cmdline_args)
